@@ -1,0 +1,15 @@
+/* Minimal CSS for content script - styling is done inline in the script */
+.injection-detector-banner {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

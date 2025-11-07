@@ -1,0 +1,13 @@
+{
+  "name": "prompt-injection-detector",
+  "version": "0.1.0",
+  "description": "browser extension for detecting prompt injection attacks",
+  "scripts": {
+    "build": "tsc && cp manifest.json dist/ && cp popup.html dist/ && cp -r styles dist/ && cp -r icons dist/",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/chrome": "^0.0.254"
+  }
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Injection Detector</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    h1 {
+      font-size: 18px;
+      margin: 0 0 12px 0;
+      font-weight: 600;
+    }
+    .status {
+      background: rgba(255,255,255,0.2);
+      padding: 12px;
+      border-radius: 8px;
+      margin: 12px 0;
+      backdrop-filter: blur(10px);
+    }
+    .status-active {
+      background: rgba(76, 175, 80, 0.3);
+    }
+    .info {
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 12px;
+      opacity: 0.9;
+    }
+    .pattern-count {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛡️ Prompt Injection Detector</h1>
+  
+  <div class="status status-active">
+    <div style="font-weight: 500; margin-bottom: 4px;">Status: Active</div>
+    <div style="font-size: 12px; opacity: 0.8;">Monitoring AI chat interfaces...</div>
+  </div>
+  
+  <div class="status">
+    <div style="font-weight: 500; margin-bottom: 4px;">Loaded Patterns</div>
+    <div class="pattern-count" id="patternCount">5</div>
+    <div style="font-size: 11px; opacity: 0.7;">Attack patterns</div>
+  </div>
+  
+  <div class="info">
+    This extension monitors your messages to ChatGPT, Claude, and Gemini for potential prompt injection patterns.
+  </div>
+</body>
+</html>

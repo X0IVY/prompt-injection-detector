@@ -1,0 +1,25 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "env": {
+    "browser": true,
+    "webextensions": true,
+    "es2022": true
+  },
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "no-console": ["warn", { "allow": ["error", "warn", "log"] }],
+    "prefer-const": "error",
+    "no-var": "error"
+  },
+  "ignorePatterns": ["dist", "node_modules", "*.config.ts"]
+}

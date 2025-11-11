@@ -4,6 +4,83 @@ tracking changes here so i don't forget what i did lol
 
 ## [unreleased]
 
+## [v2.0.0] - THE BIG PIVOT - 2025-11-11
+
+okay so i realized the whole "detect injection in user input" thing was fundamentally broken. here's what happened:
+
+### why i pivoted
+
+**the problem with v1.0**:
+- attackers can just rephrase their injection and bypass detection
+- tons of false positives from legitimate weird queries
+- always playing catch-up with new attack patterns
+- doesn't actually protect you, just annoys you
+
+basically i built something that looked cool but didn't actually work in practice.
+
+### the new approach (v2.0)
+
+**now monitoring AI RESPONSES instead of user inputs**
+
+this is way smarter because:
+- catches attacks that actually succeeded (not just attempts)
+- can't be bypassed by rephrasing
+- way fewer false positives
+- works on zero-day attacks
+
+### what's changing
+
+#### BREAKING CHANGES
+- complete rewrite of detection engine
+- now monitors AI response containers instead of input fields  
+- patterns file changing from "injection attempts" to "suspicious behaviors"
+- new alert system focuses on AI behavioral anomalies
+
+#### new detection capabilities
+- behavioral anomaly detection (tone shifts, style changes)
+- hidden instruction following detection
+- data exfiltration monitoring
+- prompt leakage detection
+- role confusion detection
+- suspicious output pattern matching
+
+#### architectural changes
+- response monitoring instead of input scanning
+- conversation context tracking
+- multi-turn attack detection
+- behavioral baseline learning
+
+### implementation status
+
+🚧 **currently refactoring** 🚧
+
+- [x] updated README with new direction
+- [x] documented why this approach is better
+- [ ] refactored content script for response monitoring
+- [ ] new pattern database for response analysis
+- [ ] behavioral anomaly detection
+- [ ] context-aware alerting
+- [ ] multi-turn attack tracking
+
+### notes to self
+
+- this is the right direction even if it means rewriting everything
+- v1.0.0 stays as "last stable input-scanning version"
+- v2.0.0 will be way more useful in practice
+- need to update all docs and examples
+- maybe rename the extension to "AI Guard" or something
+
+### migration guide
+
+if you were using v1.0.0:
+- it's still there, just checkout the v1.0.0 tag
+- v2.0.0 is completely different - not a drop-in replacement
+- the new approach is way better though, trust me
+
+---
+
+
+
 ### added
 - security documentation (SECURITY.md, PRIVACY.md)
 - dependabot for auto dependency updates  

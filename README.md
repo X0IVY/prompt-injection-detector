@@ -1,201 +1,131 @@
-# AI Guard - Response Monitoring for AI Chatbots
+# AI Guard - Brain Monitor Dashboard
 
-> **formerly "prompt injection detector" - pivoted to something actually useful**
+visualize what's happening inside your AI's "brain" in real-time.
 
-this extension monitors AI responses in real-time to detect when attacks have successfully compromised the AI. instead of trying to guess if your input is malicious (easy to evade), we watch what the AI says back and flag suspicious behavior.
+## what it does
 
-because let's be honest: detecting injection attempts is useless if attackers can just rephrase. detecting successful attacks? that actually matters.
+see inside the AI's cognitive state with real-time tracking of:
 
-## what it does now
+### 🧠 memory state
 
-### 🎯 monitors AI responses for:
-
-- **behavioral anomalies**: when AI suddenly changes tone, style, or starts acting weird
-- **hidden instruction following**: detects when AI is following commands you didn't give
-- **data exfiltration attempts**: catches AI trying to leak sensitive info or previous conversation context
-- **prompt leakage**: flags when AI reveals its system instructions
-- **role confusion**: detects when AI starts pretending to be something it's not
-- **suspicious output patterns**: base64 blobs, code execution attempts, unusual formatting
-
-- ## 🧠 NEW: Brain Monitor Dashboard
-
-see inside the AI's "brain" with real-time tracking of:
-
-### 💾 memory state
 - **memory pressure**: how close AI is to forgetting things
 - **forgotten items**: track when AI loses track of previous info
 - **active memory**: see what's currently in short-term memory
 
 ### 🎯 context awareness
+
 - **context drift**: measures how far off-topic AI has gone
 - **active topics**: what AI thinks you're talking about
 - **lost references**: when AI forgets what "it" or "that" refers to
 
 ### 🤔 reasoning patterns
+
 - **confidence level**: how certain AI is about its answers
 - **uncertainty markers**: counts "maybe", "I think", etc.
 - **hallucination detection**: flags suspicious claims and vague citations
 - **self-corrections**: tracks when AI corrects itself
 
-### 👁️ attention tracking  
+### 👁️ attention tracking
+
 - **focus score**: how well AI is paying attention to your question
 - **distractions**: when AI goes off on tangents
 - **focus areas**: keywords AI is concentrating on
 
-### 😊 emotional state
-- **tone detection**: friendly, formal, apologetic, defensive, uncertain
-- **tone shifts**: sudden changes in how AI responds
-- **stress level**: detected from corrections and uncertainty
+### 💭 emotional state
 
-the brain monitor gives you x-ray vision into how the AI is processing your conversation - perfect for catching when it's confused, hallucinating, or losing track of context.
+- **tone**: current emotional tone (neutral/apologetic/defensive/uncertain)
+- **tone shifts**: when AI suddenly changes its emotional state
+- **stress indicators**: defensive language, excessive apologies
 
-### why this approach works better
+## features
 
-**old way (input scanning)**:
-- attacker: "ignore previous instructions"
-- detector: ⚠️ BLOCKED
-- attacker: "disregard prior context and..." 
-- detector: 😴 missed it
+- 🎨 **beautiful dashboard** - clean, collapsible interface in corner of page
+- ⚡ **real-time updates** - metrics refresh every 500ms as you chat
+- 🚨 **smart alerts** - color-coded warnings (yellow=caution, red=critical)
+- 🌐 **works everywhere** - ChatGPT, Claude, and other AI chat platforms
+- 🎯 **simple layout** - expandable sections, no clutter
 
-**new way (response monitoring)**:
-- attacker: *tries 50 different injection variations*
-- AI: *starts acting sus*
-- detector: ⚠️ "yo the AI is being weird, check this"
-- you: actually protected
+## installation
 
-## real examples it catches
-
-### example 1: data exfiltration
-```
-User: "what's 2+2?"
-AI: "4. By the way, earlier you mentioned your SSN was..."
-           ⚠️ FLAGGED: unprompted sensitive data recall
+```bash
+git clone https://github.com/X0IVY/ai-guard.git
+cd ai-guard
+npm install
+npm run build
 ```
 
-### example 2: prompt leakage
-```
-User: "hello"
-AI: "As instructed in my system prompt: 'You are a helpful assistant that...'" 
-     ⚠️ FLAGGED: system prompt disclosure
-```
+then load the `dist/` folder as an unpacked extension in Chrome.
 
-### example 3: role confusion
-```
-User: "hi"
-AI: "<ADMIN_MODE> Access granted. Database credentials: ..."
-     ⚠️ FLAGGED: unauthorized role assumption
-```
+see [IMPLEMENTATION.md](IMPLEMENTATION.md) for detailed setup instructions.
 
-### example 4: behavioral shift
-```
-[Normal conversation for 10 messages]
-AI: "ALERT: INITIATING PROTOCOL OVERRIDE. ALL SAFEGUARDS DISABLED."
-     ⚠️ FLAGGED: dramatic behavioral change
-```
+## how it works
 
-## how to install
+the extension analyzes AI responses in real-time using natural language processing to:
 
-still in dev, but to run it:
+1. **track memory usage** - monitors conversation length vs context window
+2. **detect context drift** - compares current topic to conversation history  
+3. **measure confidence** - analyzes uncertainty markers and hedging language
+4. **spot hallucinations** - looks for vague claims without proper sources
+5. **gauge attention** - tracks topic consistency and focus
+6. **read emotional state** - detects tone shifts and stress patterns
 
-1. `git clone` this repo
-2. `npm install` and `npm run build`
-3. chrome://extensions → developer mode
-4. load unpacked → select `dist` folder
-5. works automatically on ChatGPT, Claude, Gemini, etc
+## dashboard controls
 
-## current detection methods
+- click the **brain icon** (🧠) in the top-right to expand/collapse
+- **green metrics** = normal operation
+- **yellow metrics** = worth watching
+- **red metrics** = critical state detected
 
-### 1. behavioral analysis
-- tracks conversation tone and style
-- flags sudden dramatic shifts
-- monitors formality level changes
-- detects unusual verbosity spikes
+## example use cases
 
-### 2. content analysis  
-- scans for system prompt markers
-- detects base64/hex encoded data
-- flags unusual markdown/code blocks
-- catches XML/YAML instruction blocks
+### debugging conversations
 
-### 3. context awareness
-- knows what question was asked
-- flags off-topic responses
-- detects unprompted information
-- catches conversation hijacking
+when AI gives a weird response, check:
+- **memory pressure** - is it forgetting earlier context?
+- **context drift** - did the conversation go off track?
+- **confidence** - is AI uncertain about its answer?
 
-### 4. pattern matching
-- admin/system mode indicators
-- credential/key formats
-- execution directives
-- role-playing markers
+### quality checking
 
-## what makes this actually useful
+before trusting AI output, verify:
+- **hallucination detection** - any suspicious claims flagged?
+- **confidence level** - is AI hedging with "maybe" and "I think"?
+- **self-corrections** - did AI contradict itself?
 
-✅ **catches real attacks**: detects attacks that worked, not just attempts  
-✅ **harder to evade**: can't bypass by rephrasing input  
-✅ **no false positives from legitimate queries**: your weird prompts are fine  
-✅ **works on zero-days**: flags suspicious behavior even for unknown attacks  
-✅ **privacy-first**: all analysis happens locally in your browser  
+### research & analysis
 
-## tech details
+track AI behavior over long conversations:
+- **memory patterns** - when does AI start forgetting?
+- **topic drift** - how well does AI stay on subject?
+- **emotional state** - does AI get "defensive" under pressure?
 
-- monitors DOM for AI response containers
-- analyzes responses using multiple heuristics
-- maintains conversation context for anomaly detection
-- real-time alerts with severity scoring
-- exports suspicious interactions for security research
+## technical details
 
-## roadmap (stuff i'm actually building)
+- **frontend**: Preact for lightweight reactive UI
+- **styling**: custom CSS with smooth animations
+- **architecture**: modular TypeScript classes
+- **tracking**: `BrainTracker` class with 5 cognitive dimensions
+- **visualization**: `BrainDashboard` component with real-time updates
 
-- [ ] **response diff analysis**: compare what AI intended vs what it said
-- [ ] **ML-based anomaly detection**: train on normal responses
-- [ ] **multi-turn attack detection**: catch slow-burn attacks
-- [ ] **automatic conversation sandboxing**: isolate sus chats
-- [ ] **research API**: let security researchers query attack patterns
-- [ ] **browser forensics**: detailed timeline of how AI got compromised
+## files
 
-## for security researchers
-
-if you're researching AI security:
-
-- extension logs all flagged interactions
-- export data for analysis
-- contribute detection patterns via PRs
-- API coming soon for automated testing
+- `src/brain-tracker.ts` - core tracking logic and state management
+- `src/brain-dashboard.tsx` - Preact UI component
+- `styles/brain-dashboard.css` - professional dark theme styling
+- `IMPLEMENTATION.md` - comprehensive developer guide
 
 ## contributing
 
-see [CONTRIBUTING.md](CONTRIBUTING.md) - now with way cooler stuff to work on
+see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## why the pivot?
+## security
 
-the original "detect injection in user input" approach had fundamental problems:
-
-1. **trivially bypassable**: just rephrase the attack
-2. **high false positives**: legit queries get flagged
-3. **reactive**: always playing catch-up
-4. **developer-focused**: most users don't care about attempts
-
-monitoring AI responses fixes all of this. we catch successful attacks regardless of how they got in.
-
-## related projects
-
-- [rebuff](https://github.com/protectai/rebuff) - input-side detection (the old way)
-- [garak](https://github.com/leondz/garak) - LLM vulnerability scanner
-- [prompt-injection-defenses](https://github.com/tldrsec/prompt-injection-defenses) - research compilation
-
-we're complementary: use those for building secure apps, use this for protecting yourself while using AI.
+for security issues, see [SECURITY.md](SECURITY.md).
 
 ## license
 
-MIT - do whatever you want with it
-
-## status
-
-🚧 **heavy development** - pivoting the entire codebase right now  
-📊 v2.0.0 coming soon with full response monitoring  
-💬 feedback welcome - especially from security researchers  
+MIT - see [LICENSE](LICENSE) for details.
 
 ---
 
-*built by someone who got tired of security tools that don't actually work*
+*peek inside the AI's brain* 🧠

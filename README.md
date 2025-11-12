@@ -17,6 +17,38 @@ because let's be honest: detecting injection attempts is useless if attackers ca
 - **role confusion**: detects when AI starts pretending to be something it's not
 - **suspicious output patterns**: base64 blobs, code execution attempts, unusual formatting
 
+- ## 🧠 NEW: Brain Monitor Dashboard
+
+see inside the AI's "brain" with real-time tracking of:
+
+### 💾 memory state
+- **memory pressure**: how close AI is to forgetting things
+- **forgotten items**: track when AI loses track of previous info
+- **active memory**: see what's currently in short-term memory
+
+### 🎯 context awareness
+- **context drift**: measures how far off-topic AI has gone
+- **active topics**: what AI thinks you're talking about
+- **lost references**: when AI forgets what "it" or "that" refers to
+
+### 🤔 reasoning patterns
+- **confidence level**: how certain AI is about its answers
+- **uncertainty markers**: counts "maybe", "I think", etc.
+- **hallucination detection**: flags suspicious claims and vague citations
+- **self-corrections**: tracks when AI corrects itself
+
+### 👁️ attention tracking  
+- **focus score**: how well AI is paying attention to your question
+- **distractions**: when AI goes off on tangents
+- **focus areas**: keywords AI is concentrating on
+
+### 😊 emotional state
+- **tone detection**: friendly, formal, apologetic, defensive, uncertain
+- **tone shifts**: sudden changes in how AI responds
+- **stress level**: detected from corrections and uncertainty
+
+the brain monitor gives you x-ray vision into how the AI is processing your conversation - perfect for catching when it's confused, hallucinating, or losing track of context.
+
 ### why this approach works better
 
 **old way (input scanning)**:

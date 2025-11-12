@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Prompt Injection Detector",
+    "name": "AI Guard",
   "version": "0.1.0",
-  "description": "Detects potential prompt injection patterns in AI chat interfaces",
+    "description": "Peek inside ChatGPT's brain - tracks memory, context drift, hallucinations, and confidence in real-time",
   "permissions": [
     "activeTab",
     "storage"

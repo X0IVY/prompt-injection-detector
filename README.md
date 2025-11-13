@@ -1,6 +1,6 @@
 # ai-guard
 
-ever wonder what's going on inside ChatGPT's head when it gives you a weird answer?
+ever wonder what's going on inside your LLMS head when it gives you a weird answer?
 
 this extension basically lets you peek into the AI's "brain" while you're chatting. tracks things like memory, context drift, confidence levels, hallucinations - all in real time.
 

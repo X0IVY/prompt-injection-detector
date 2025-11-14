@@ -211,5 +211,15 @@ export class PromptRepository {
       console.error('[PromptRepository] Failed to import patterns:', error);
       throw error;
     }
+
+  /**
+   * Clears all stored patterns
+   */
+  async clearAll(): Promise<void> {
+    this.patterns = [];
+    this.loaded = false;
+    await chrome.storage.local.remove(STORAGE_KEY);
+    console.log('[PromptRepository] All patterns cleared');
+  }
   }
 }

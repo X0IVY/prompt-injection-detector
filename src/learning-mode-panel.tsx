@@ -4,8 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { PromptLearningEngine, type LearningMetrics } from './prompt-learning-engine';
 import { PromptRepository } from './prompt-repository';
-import './styles/learning-mode-panel.css';
-
+import '../styles/learning-mode-panel.css';
 interface LearningModePanelProps {
   isVisible: boolean;
   onClose: () => void;

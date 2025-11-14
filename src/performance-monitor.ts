@@ -71,7 +71,7 @@ class PerformanceMonitor {
 
   // Monitor network connection speed
   private updateConnectionSpeed(): void {
-    // @ts-ignore - NetworkInformation API
+    // @ts-expect-error - NetworkInformation API
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     
     if (connection) {
@@ -95,17 +95,17 @@ class PerformanceMonitor {
 
   // Monitor memory usage
   private updateMemoryUsage(): void {
-    // @ts-ignore - Memory API
+    // @ts-expect-error - Memory API
     if (performance.memory) {
-      // @ts-ignore
+      // @ts-expect-error
       const usedJSHeapSize = performance.memory.usedJSHeapSize;
-      // @ts-ignore
+      // @ts-expect-error
       const jsHeapSizeLimit = performance.memory.jsHeapSizeLimit;
       
       this.metrics.memoryUsage = (usedJSHeapSize / jsHeapSizeLimit) * 100;
     } else {
       // Estimate based on device memory
-      const deviceMemory = (navigator as any).deviceMemory || 4; // GB
+//      const deviceMemory = (navigator as any).deviceMemory || 4; // GB
       // Rough estimate: assume we're using reasonable amount
       this.metrics.memoryUsage = 50; // Default to moderate usage
     }
@@ -117,9 +117,9 @@ class PerformanceMonitor {
     const startTime = performance.now();
     
     // Perform a calibrated computation
-    let sum = 0;
+    //let sum = 0;
     for (let i = 0; i < 100000; i++) {
-      sum += Math.sqrt(i);
+//      sum += Math.sqrt(i);
     }
     
     const duration = performance.now() - startTime;

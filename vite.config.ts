@@ -7,8 +7,8 @@ import { visualizer } from 'rollup-plugin-visualizer';
 export default defineConfig({
   plugins: [
     preact(),
-    crx({ manifest })
-        visualizer({ filename: './stats.html', open: true })
+    crx({ manifest }),
+    visualizer({ filename: './stats.html', open: true })
   ],
   build: {
     rollupOptions: {

@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
 import { crx } from '@crxjs/vite-plugin';
-import manifest from './manifest.json' assert { type: 'json' };
+import manifest from './manifest.json' with { type: 'json' };
 import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({

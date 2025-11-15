@@ -1,5 +1,6 @@
 {
-  "name": "ai-guard",  "version": "0.1.0",
+  "name": "ai-guard",
+  "version": "0.1.0",
   "description": "Modern browser extension for detecting prompt injection attacks",
   "type": "module",
   "scripts": {
@@ -25,6 +26,6 @@
     "prettier": "^3.2.5",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
-        "rollup-plugin-visualizer": "^5.12.0"
+    "rollup-plugin-visualizer": "^5.12.0"
   }
 }

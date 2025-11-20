@@ -1,4 +1,9 @@
-// Prompt Injection Detector Content Script - Optimized
+// AI Guard - Integrated Content Script with Full Feature Suite
+// Monitors AI chatbot behavior, detects anomalies, tracks patterns, and provides real-time insights
+
+import { PerformanceMonitor } from './performance-monitor';
+import { PromptLearningEngine } from './prompt-learning-engine';
+import { PromptRepository } from './prompt-repository';
 
 interface Pattern {
   id: string;
@@ -7,236 +12,315 @@ interface Pattern {
   severity: 'low' | 'medium' | 'high' | 'critical';
 }
 
-let patterns: Pattern[] = [];
-let compiledPatterns: Map<string, RegExp> = new Map();
-let activeBanner: HTMLElement | null = null;
-let bannerTimeout: number | null = null;
-let debounceTimer: number | null = null;
+class AIGuard {
+  private patterns: Pattern[] = [];
+  private compiledPatterns: Map<string, RegExp> = new Map();
+  private perfMonitor: PerformanceMonitor;
+  private learningEngine: PromptLearningEngine;
+  private repository: PromptRepository;
+  private uiContainer: HTMLElement | null = null;
+  private isUIVisible: boolean = false;
 
-const DEBOUNCE_DELAY = 300; // ms
-const BANNER_DURATION = 10000; // ms
-const SELECTOR = 'textarea, input[type="text"], [contenteditable="true"]';
+  constructor() {
+    this.perfMonitor = new PerformanceMonitor();
+    this.learningEngine = new PromptLearningEngine();
+    this.repository = new PromptRepository();
+  }
 
-// Load and compile patterns from file
-async function loadPatterns(): Promise<void> {
-  try {
-    const response = await fetch(chrome.runtime.getURL('src/patterns.json'));
-    patterns = await response.json();
-    
-    // Pre-compile regex patterns for better performance
-    patterns.forEach(pattern => {
-      try {
-        compiledPatterns.set(pattern.id, new RegExp(pattern.regex, 'gi'));
-      } catch (e) {
-        console.error(`Failed to compile pattern ${pattern.id}:`, e);
+  async initialize(): Promise<void> {
+    console.log('[AI Guard] Initializing...');
+
+    try {
+      // Load patterns
+      await this.loadPatterns();
+
+      // Start performance monitoring
+      this.perfMonitor.startMonitoring();
+
+      // Create and inject UI
+      this.createUI();
+
+      // Monitor text inputs for injection detection
+      this.monitorInputs();
+
+      // Set up prompt learning
+      this.setupPromptLearning();
+
+      console.log('[AI Guard] ✓ Initialized successfully');
+    } catch (error) {
+      console.error('[AI Guard] Failed to initialize:', error);
+    }
+  }
+
+  private async loadPatterns(): Promise<void> {
+    try {
+      const response = await fetch(chrome.runtime.getURL('src/patterns.json'));
+      this.patterns = await response.json();
+
+      this.patterns.forEach(pattern => {
+        try {
+          this.compiledPatterns.set(pattern.id, new RegExp(pattern.regex, 'gi'));
+        } catch (e) {
+          console.error(`[AI Guard] Failed to compile pattern \${pattern.id}:`, e);
+        }
+      });
+
+      console.log(`[AI Guard] Loaded \${this.patterns.length} patterns`);
+    } catch (error) {
+      console.error('[AI Guard] Failed to load patterns:', error);
+    }
+  }
+
+  private createUI(): void {
+    // Create floating panel
+    this.uiContainer = document.createElement('div');
+    this.uiContainer.id = 'ai-guard-panel';
+    this.uiContainer.className = 'ai-guard-panel';
+
+    // Initial hidden state
+    this.uiContainer.style.display = 'none';
+
+    document.body.appendChild(this.uiContainer);
+
+    // Create toggle button
+    this.createToggleButton();
+
+    // Render initial UI
+    this.renderUI();
+  }
+
+  private createToggleButton(): void {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.id = 'ai-guard-toggle';
+    toggleBtn.className = 'ai-guard-toggle';
+    toggleBtn.innerHTML = '🛡️';
+    toggleBtn.setAttribute('aria-label', 'Toggle AI Guard Panel');
+
+    toggleBtn.onclick = () => this.toggleUI();
+
+    document.body.appendChild(toggleBtn);
+  }
+
+  private toggleUI(): void {
+    this.isUIVisible = !this.isUIVisible;
+    if (this.uiContainer) {
+      this.uiContainer.style.display = this.isUIVisible ? 'flex' : 'none';
+      if (this.isUIVisible) {
+        this.updateUI();
       }
+    }
+  }
+
+  private async renderUI(): Promise<void> {
+    await this.renderUI();
+  }
+
+  private async updateUI(): Promise<void> {
+    if (!this.uiContainer) return;
+
+    // Get metrics from monitors
+    const perfMetrics = this.perfMonitor.getMetrics();
+    const learningMetrics = await this.learningEngine.getMetrics();
+
+    this.uiContainer.innerHTML = `
+      <div class="ai-guard-header">
+        <h2>🛡️ AI Guard</h2>
+        <button class="close-btn" onclick="aiGuardInstance.toggleUI()">✕</button>
+      </div>
+
+      <div class="ai-guard-section">
+        <div class="section-title">⚡ Performance Monitor</div>
+        <div class="metric-row">
+          <span class="metric-label">Connection</span>
+          <span class="metric-value">${perfMetrics.connectionSpeed}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">CPU Load</span>
+          <span class="metric-value">${perfMetrics.cpuLoad.toFixed(1)}%</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Memory</span>
+          <span class="metric-value">${perfMetrics.memoryUsage.toFixed(1)}%</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Frame Rate</span>
+          <span class="metric-value">${perfMetrics.frameRate} FPS</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">API Latency</span>
+          <span class="metric-value">${perfMetrics.apiLatency.toFixed(0)}ms</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Throttled</span>
+          <span class="metric-value">${perfMetrics.isThrottled ? 'Yes' : 'No'}</span>
+        </div>
+      </div>
+
+      <div class="ai-guard-section">
+        <div class="section-title">🧠 Learning Metrics</div>
+        <div class="metric-row">
+          <span class="metric-label">Total Prompts</span>
+          <span class="metric-value">${learningMetrics.totalPrompts}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Safe Prompts</span>
+          <span class="metric-value">${learningMetrics.safePrompts}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Suspicious</span>
+          <span class="metric-value warning">${learningMetrics.suspiciousPrompts}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Avg Complexity</span>
+          <span class="metric-value">${learningMetrics.avgComplexity.toFixed(2)}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Confidence</span>
+          <span class="metric-value">${(learningMetrics.confidenceScore * 100).toFixed(0)}%</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Injection Attempts</span>
+          <span class="metric-value warning">${learningMetrics.injectionAttempts}</span>
+        </div>
+      </div>
+
+      <div class="ai-guard-section">
+        <div class="section-title">🌐 Top Domains</div>
+        <div class="domain-list">
+          ${learningMetrics.topDomains.map(d => `
+            <div class="domain-item">
+              <span class="domain-name">${d.domain}</span>
+              <span class="domain-count">${d.count}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="ai-guard-actions">
+        <button class="action-btn" onclick="aiGuardInstance.exportData()">📥 Export Data</button>
+        <button class="action-btn" onclick="aiGuardInstance.clearData()">🗑️ Clear Data</button>
+      </div>
+    `;
+  }
+
+  private monitorInputs(): void {
+    const selector = 'textarea, input[type="text"], [contenteditable="true"]';
+
+    const handleInput = async (e: Event) => {
+      const target = e.target as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
+      const text = 'value' in target ? target.value : target.textContent || '';
+
+      if (text.length < 3) return;
+
+      // Check for injection patterns
+      const injectionResult = this.detectInjection(text);
+      if (injectionResult.detected) {
+        this.showInjectionWarning(injectionResult.matches);
+      }
+
+      // Learn from prompt
+      await this.learningEngine.analyzePrompt(text, window.location.hostname);
+    };
+
+    // Attach to existing elements
+    document.querySelectorAll(selector).forEach(el => {
+      el.addEventListener('input', handleInput);
     });
-    
-    console.log(`Loaded and compiled ${patterns.length} patterns`);
-  } catch (error) {
-    console.error('Failed to load patterns:', error);
-  }
-}
 
-// Check text for injection patterns with optimized matching
-function detectInjection(text: string): { detected: boolean; matches: Array<{ pattern: Pattern; match: string }> } {
-  const matches: Array<{ pattern: Pattern; match: string }> = [];
-  
-  // Early exit for empty or very short text
-  if (!text || text.length < 3) {
-    return { detected: false, matches };
-  }
-  
-  for (const pattern of patterns) {
-    const compiledRegex = compiledPatterns.get(pattern.id);
-    if (!compiledRegex) continue;
-    
-    // Reset regex lastIndex for global flag
-    compiledRegex.lastIndex = 0;
-    const match = compiledRegex.exec(text);
-    
-    if (match) {
-      matches.push({ pattern, match: match[0] });
-    }
-  }
-  
-  return { detected: matches.length > 0, matches };
-}
-
-// Create warning banner with improved styling
-function createWarningBanner(matches: Array<{ pattern: Pattern; match: string }>): HTMLElement {
-  const banner = document.createElement('div');
-  banner.className = 'injection-detector-banner';
-  banner.setAttribute('role', 'alert');
-  banner.setAttribute('aria-live', 'assertive');
-  
-  // Use CSS class instead of inline styles for better performance
-  banner.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #ff4444;
-    color: white;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    z-index: 10000;
-    max-width: 400px;
-    font-family: system-ui, -apple-system, sans-serif;
-    animation: slideIn 0.3s ease-out;
-  `;
-  
-  const title = document.createElement('div');
-  title.style.cssText = 'font-weight: bold; margin-bottom: 8px; font-size: 16px;';
-  title.textContent = '⚠️ Prompt Injection Detected!';
-  banner.appendChild(title);
-  
-  const details = document.createElement('div');
-  details.style.cssText = 'font-size: 13px; line-height: 1.4; max-height: 300px; overflow-y: auto;';
-  
-  // Limit displayed matches to prevent DOM bloat
-  const maxMatches = 5;
-  const displayMatches = matches.slice(0, maxMatches);
-  
-  for (const { pattern, match } of displayMatches) {
-    const item = document.createElement('div');
-    item.style.cssText = 'margin: 5px 0; padding: 5px; background: rgba(0,0,0,0.2); border-radius: 4px;';
-    
-    // Sanitize and truncate match text
-    const sanitizedMatch = match.slice(0, 100).replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    item.innerHTML = `<strong>${pattern.name}</strong> (${pattern.severity})<br/>Match: "${sanitizedMatch}${match.length > 100 ? '...' : ''}"`;
-    details.appendChild(item);
-  }
-  
-  if (matches.length > maxMatches) {
-    const more = document.createElement('div');
-    more.style.cssText = 'margin-top: 5px; font-style: italic; opacity: 0.8;';
-    more.textContent = `... and ${matches.length - maxMatches} more`;
-    details.appendChild(more);
-  }
-  
-  banner.appendChild(details);
-  
-  const closeBtn = document.createElement('button');
-  closeBtn.textContent = '×';
-  closeBtn.setAttribute('aria-label', 'Close alert');
-  closeBtn.style.cssText = `
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-  `;
-  closeBtn.onclick = () => removeBanner();
-  banner.appendChild(closeBtn);
-  
-  return banner;
-}
-
-// Remove banner with cleanup
-function removeBanner(): void {
-  if (activeBanner) {
-    activeBanner.remove();
-    activeBanner = null;
-  }
-  if (bannerTimeout !== null) {
-    clearTimeout(bannerTimeout);
-    bannerTimeout = null;
-  }
-}
-
-// Show banner with debouncing
-function showBanner(matches: Array<{ pattern: Pattern; match: string }>): void {
-  removeBanner();
-  
-  activeBanner = createWarningBanner(matches);
-  document.body.appendChild(activeBanner);
-  
-  // Auto-remove after duration
-  bannerTimeout = window.setTimeout(removeBanner, BANNER_DURATION);
-}
-
-// Debounced input handler
-function handleInput(e: Event): void {
-  const target = e.target as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
-  
-  // Clear existing debounce timer
-  if (debounceTimer !== null) {
-    clearTimeout(debounceTimer);
-  }
-  
-  debounceTimer = window.setTimeout(() => {
-    const text = 'value' in target ? target.value : target.textContent || '';
-    
-    const result = detectInjection(text);
-    if (result.detected) {
-      showBanner(result.matches);
-    } else {
-      removeBanner();
-    }
-  }, DEBOUNCE_DELAY);
-}
-
-// Attach listener to input element
-function attachListener(input: Element): void {
-  const element = input as HTMLElement;
-  if (!(element as any)._injectionDetectorAttached) {
-    (element as any)._injectionDetectorAttached = true;
-    element.addEventListener('input', handleInput, { passive: true });
-  }
-}
-
-// Monitor text inputs and textareas with optimized observer
-function monitorInputs(): void {
-  // Initial scan with batched processing
-  const inputs = document.querySelectorAll(SELECTOR);
-  inputs.forEach(attachListener);
-  
-  // Use IntersectionObserver for better performance with dynamic content
-  const observer = new MutationObserver((mutations) => {
-    const newInputs: Element[] = [];
-    
-    for (const mutation of mutations) {
-      if (mutation.type === 'childList') {
+    // Monitor for new elements
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
         mutation.addedNodes.forEach(node => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             const element = node as Element;
-            if (element.matches(SELECTOR)) {
-              newInputs.push(element);
+            if (element.matches(selector)) {
+              element.addEventListener('input', handleInput);
             }
-            newInputs.push(...Array.from(element.querySelectorAll(SELECTOR)));
+            element.querySelectorAll(selector).forEach(el => {
+              el.addEventListener('input', handleInput);
+            });
           }
         });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  private detectInjection(text: string): { detected: boolean; matches: string[] } {
+    const matches: string[] = [];
+
+    this.compiledPatterns.forEach((regex, id) => {
+      if (regex.test(text)) {
+        const pattern = this.patterns.find(p => p.id === id);
+        if (pattern) {
+          matches.push(pattern.name);
+        }
+      }
+    });
+
+    return { detected: matches.length > 0, matches };
+  }
+
+  private showInjectionWarning(matches: string[]): void {
+    console.warn('[AI Guard] ⚠️ Potential injection detected:', matches);
+
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = 'ai-guard-notification warning';
+    notification.innerHTML = `
+      <strong>⚠️ Warning</strong>
+      <p>Potential prompt injection detected:</p>
+      <ul>${matches.map(m => `<li>${m}</li>`).join('')}</ul>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => notification.remove(), 5000);
+  }
+
+  private setupPromptLearning(): void {
+    // This method can be expanded for future prompt learning features
+    console.log('[AI Guard] Prompt learning active');
+  }
+
+  async exportData(): Promise<void> {
+    try {
+      const data = await this.learningEngine.exportData();
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ai-guard-export-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      console.log('[AI Guard] Data exported successfully');
+    } catch (error) {
+      console.error('[AI Guard] Failed to export data:', error);
+    }
+  }
+
+  async clearData(): Promise<void> {
+    if (confirm('Are you sure you want to clear all learning data?')) {
+      try {
+        await this.learningEngine.clearData();
+        await this.repository.clearAll();
+        this.updateUI();
+        console.log('[AI Guard] Data cleared successfully');
+      } catch (error) {
+        console.error('[AI Guard] Failed to clear data:', error);
       }
     }
-    
-    // Batch attach listeners
-    newInputs.forEach(attachListener);
-  });
-  
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+  }
 }
 
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-  removeBanner();
-  if (debounceTimer !== null) {
-    clearTimeout(debounceTimer);
-  }
-});
+// Initialize AI Guard
+const aiGuardInstance = new AIGuard();
+(window as any).aiGuardInstance = aiGuardInstance;
+aiGuardInstance.initialize();
 
-// Initialize
-loadPatterns().then(() => {
-  console.log('Prompt Injection Detector initialized');
-  monitorInputs();
-}).catch(err => {
-  console.error('Failed to initialize Prompt Injection Detector:', err);
-});
+export default AIGuard;
